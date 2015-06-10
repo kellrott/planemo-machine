@@ -75,3 +75,6 @@
 - name: Add small tool conf
   template: src=tool_conf.small.xml.j2 dest={{ small_tool_conf_path }}
   when: small_tool_conf
+
+- name: Add Galaxy Restart Script
+  template: src=galaxy-restart.j2 dest=/usr/bin/galaxy-restart owner=root group=rootwheel mode="u=rwx,g=rx,o=rx"
