@@ -42,3 +42,8 @@
   connection: local
   tasks:
     - file: path=/opt/galaxy/tools state=directory owner=ubuntu
+- hosts: localhost
+  connection: local
+  roles: 
+      - role: dream-smc-client
+        sudo: yes

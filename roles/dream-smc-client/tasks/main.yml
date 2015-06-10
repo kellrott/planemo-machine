@@ -1,0 +1,4 @@
+
+- 
+    name: Synapse Client
+    pip: name=synapseclient

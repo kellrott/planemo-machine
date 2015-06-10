@@ -212,7 +212,8 @@
         "roles/galaxyprojectdotorg.devbox", 
         "roles/galaxyprojectdotorg.galaxy", 
         "roles/galaxyprojectdotorg.galaxy-extras", 
-        "roles/smola.java"
+        "roles/smola.java",
+        "roles/dream-smc-client/"
       ], 
       "override": {
         "virtualbox-iso-vagrant": {
