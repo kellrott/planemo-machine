@@ -78,3 +78,9 @@
 
 - name: Add Galaxy Restart Script
   template: src=galaxy-restart.j2 dest=/usr/bin/galaxy-restart owner=root group=root mode="u=rwx,g=rx,o=rx"
+
+- name: Create /etc/galaxy
+  file: path=/etc/galaxy state=directory owner=root mode="u=r,g=r,o="
+
+- name: Add Galaxy API Key File
+  template: src=apikey.j2 dest=/etc/galaxy/apikey owner=root group=root mode="u=r,g=r,o="
