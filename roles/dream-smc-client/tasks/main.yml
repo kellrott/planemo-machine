@@ -1,5 +1,5 @@
 
-- 
+-
     name: Synapse Client
     pip: name=synapseclient
 -
@@ -8,3 +8,6 @@
 -
     name: Add SMC Evaluation Tool to Toolbox
     template: src=dev_tool_conf.xml.j2 dest={{ dev_tool_conf }}
+-
+    name: Copy dream_galaxy_submit
+    command: cp /opt/galaxy/SMC-Het-Challenge/dream_galaxy_submit /usr/bin/
