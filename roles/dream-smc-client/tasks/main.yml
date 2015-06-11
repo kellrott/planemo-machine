@@ -2,3 +2,9 @@
 - 
     name: Synapse Client
     pip: name=synapseclient
+-
+    name: Download SMC Evaluation Tool
+    git: dest=/opt/galaxy/SMC-Het-Challenge repo=https://github.com/Sage-Bionetworks/SMC-Het-Challenge.git
+-
+    name: Add SMC Evaluation Tool to Toolbox
+    template: src=dev_tool_conf.xml.j2 dest={{ dev_tool_conf }}
