@@ -190,10 +190,6 @@
           "execute_command": "echo '{{ user `username` }}' | sudo -S sh '{{ .Path }}'"
         }
       }, 
-      "only": [
-        "virtualbox-iso", 
-        "virtualbox-iso-vagrant"
-      ], 
       "type": "shell", 
       "scripts": [
         "scripts/setup_ansible.sh"
@@ -237,10 +233,6 @@
           "execute_command": "echo '{{ user `username` }}' | sudo -S sh '{{ .Path }}'"
         }
       }, 
-      "only": [
-        "virtualbox-iso", 
-        "virtualbox-iso-vagrant"
-      ], 
       "type": "shell", 
       "scripts": [
         "scripts/cleanup.sh"
