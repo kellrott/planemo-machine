@@ -1,4 +1,8 @@
 ---
+# TODO: replace unneeded sudo and sudo_user attributes with user and group
+# permissions
+# TODO: break into smaller tasks - such as configuring all X stuff with a 
+# single command.
 - name: Install the debs
   sudo: True
   apt: name={{ item }} state=latest update_cache=yes
@@ -18,10 +22,39 @@
     - python-dev
     - cmake
 
+- name: Install the debs (X11 environment)
+  sudo: True
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - kate
+    - gedit
+    - xubuntu-desktop
+  when: galaxy_devbox_include_x
+
+# Setup atom (https://atom.io/) ppa and install.
+- name: Add custom Galaxy PPA (used for nginx package)
+  apt_repository: repo="ppa:webupd8team/atom" update_cache=yes
+  when: galaxy_devbox_include_x
+
+- name: Install Atom Edit system packages
+  apt: pkg={{ item }} state=latest update_cache=yes
+  with_items:
+    - atom
+  when: galaxy_devbox_include_x
+
+- name: Configure GUI to auto login the dev user.
+  template: src=10-xubuntu.conf.j2 dest=/etc/lightdm/lightdm.conf.d/10-xubuntu.conf
+  when: galaxy_devbox_include_x
+
 - name: Install linuxbrew
   sudo: True
   sudo_user: "{{ dev_user_name }}"
   shell: "ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/linuxbrew/go/install)\""
+
+- name: Install vim extras
+  sudo: True
+  sudo_user: "{{ dev_user_name }}"
+  shell: "curl http://j.mp/spf13-vim3 -L -o - | sh"
 
 - name: Tap galaxyproject recipes
   sudo: True
@@ -34,11 +67,42 @@
   shell: "{{ dev_user_home }}/.linuxbrew/bin/brew install -v planemo"
 
 - name: Setup .planemo.yml
-  template: src=planemo.yml.j2 dest={{ dev_user_home }}/.planemo.yml
+  template: src=planemo.yml.j2 dest={{ dev_user_home }}/.planemo.yml owner={{ dev_user_name }} group={{ dev_user_group }}
+
+- name: Configure Destop directory.
+  file: path={{ dev_user_home }}/Desktop state=directory  owner={{ dev_user_name }} group={{ dev_user_group }}
+  when: galaxy_devbox_include_x
+
+- name: Configure Destop shortcuts.
+  template: src=Desktop/{{ item }}.desktop.j2 dest={{ dev_user_home }}/Desktop/{{ item }}.desktop mode=a+x owner={{ dev_user_name }} group={{ dev_user_group }}
+  when: galaxy_devbox_include_x
+  with_items:
+    - atom
+    - codebox
+    - exo-terminal-emulator
+    - exo-web-browser
+    - galaxyproject
+    - ipython
+    - localgalaxy
+    - localtoolshed
+    - planemo
+    - toolsyntax
+
+- name: Configure Desktop link to development tools.
+  file: src={{ dev_tool_conf_dir }} dest={{ dev_user_home }}/Desktop/tools state=link owner={{ dev_user_name }} group={{ dev_user_group }} force=true
+  when: galaxy_devbox_include_x
+
+- name: Install linuxbrew bash completion stuff
+  sudo: True
+  sudo_user: "{{ dev_user_name }}"
+  shell: "{{ dev_user_home }}/.linuxbrew/bin/brew install -v bash-completion"
 
 # TODO: MANPATH, INFOPATH
 - name: Add linuxbrew to dev users PATH
   lineinfile: "dest={{ dev_user_shellrc }} line='export PATH={{ dev_user_home }}/.linuxbrew/bin:$PATH'"
+
+- name: Source linuxbrew bash completions
+  lineinfile: "dest={{ dev_user_shellrc }} line='. {{ dev_user_home }}/.linuxbrew/etc/bash_completion'"
 
 - name: Install the dev tools
   sudo: True
@@ -76,8 +140,8 @@
   template: src=tool_conf.small.xml.j2 dest={{ small_tool_conf_path }}
   when: small_tool_conf
 
-- name: Add Galaxy Restart Script
-  template: src=galaxy-restart.j2 dest=/usr/bin/galaxy-restart owner=root group=root mode="u=rwx,g=rx,o=rx"
+- name: "Install Galaxy management scripts."
+  template: src=restart_galaxy.j2 dest=/usr/local/bin/restart_galaxy mode=a+x
 
 - name: Create /etc/galaxy
   file: path=/etc/galaxy state=directory owner=root group=admin mode="u=rx,g=rx,o="
