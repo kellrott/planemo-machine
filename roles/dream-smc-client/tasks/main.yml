@@ -8,6 +8,10 @@
 -
     name: Add SMC Evaluation Tool to Toolbox
     template: src=dev_tool_conf.xml.j2 dest={{ dev_tool_conf }}
+- 
+    name: Replace small tool conf with empty conf
+    template: src=tool_conf.small.xml.j2 dest={{ small_tool_conf_path }}
+    when: small_tool_conf
 -
     name: Copy dream_galaxy_submit
     command: cp /opt/galaxy/SMC-Het-Challenge/dream_galaxy_submit /usr/bin/
