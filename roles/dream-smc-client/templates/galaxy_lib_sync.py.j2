@@ -1,0 +1,154 @@
+#!/usr/bin/env python
+"""
+This script scans a directory for files then loads the file into library
+
+Sample call:
+python galaxy_lib_sync.py [--apikey <api_key>] <api_url> /data/folder "API Imports"
+
+NOTE:  The upload method used requires the data library filesystem upload allow_library_path_paste
+"""
+import os
+import shutil
+import sys
+import re
+import json
+import time
+import requests
+import argparse
+from glob import glob
+
+GALAXY_USER_API_KEY = os.path.join(os.environ["HOME"], ".galaxy_key")
+GALAXY_MASTER_API_KEY_FILE = "/etc/galaxy/api.key"
+
+class RemoteGalaxy(object):
+
+    def __init__(self, url, api_key):
+        self.url = url
+        self.api_key = api_key
+
+    def get(self, path):
+        c_url = self.url + path
+        params = {}
+        params['key'] = self.api_key
+        req = requests.get(c_url, params=params)
+        return req.json()
+    
+    def get_user_id(self, email):
+        for user in self.get("/api/users"):
+            if user['email'] == email:
+                return user['id']
+        return None
+    
+    def new_api_key(self, uid):
+        api_key = self.post("/api/users/%s/api_key" % (uid), {})
+        return api_key
+
+    def post(self, path, payload):
+        c_url = self.url + path
+        params = {}
+        params['key'] = self.api_key
+        print "POSTING", c_url, json.dumps(payload)
+        req = requests.post(c_url, data=json.dumps(payload), params=params, headers = {'Content-Type': 'application/json'} )
+        return req.json()
+
+    def post_text(self, path, payload, params=None):
+        c_url = self.url + path
+        if params is None:
+            params = {}
+        params['key'] = self.api_key
+        print "POSTING", c_url, json.dumps(payload)
+        req = requests.post(c_url, data=json.dumps(payload), params=params, headers = {'Content-Type': 'application/json'} )
+        return req.text
+
+
+class LibrarySync:
+    def __init__(self, remote_galaxy, library_name):
+        self.remote_galaxy = remote_galaxy
+
+        library_id = self.get_library_id(library_name)
+        if library_id is None:
+            lib_create_data = {'name':library_name}
+            library = remote_galaxy.post('/api/libraries', lib_create_data)
+            library_id = library['id']
+        self.library_id = library_id
+        self.path_map = {}
+    
+    def get_library_id(self, name):
+        for lib in self.remote_galaxy.get("/api/libraries"):
+            if not lib['deleted'] and lib['name'] == name:
+                return lib['id']
+        return None
+
+    def get_library_folder_id(self, library_id, folder):
+        id_value = None
+        for lib in self.remote_galaxy.get("/api/libraries/%s/contents" % (library_id)):
+            if lib['type'] == 'folder' and lib['name'] == folder:
+                id_value = lib['id']
+        return id_value
+
+    def get_library_dataset_id(self, library_id, folder, dataset_name):
+        dataset_id = None
+        file_name = os.path.abspath(os.path.join(folder, dataset_name))
+        for elem in self.remote_galaxy.get("/api/libraries/%s/contents" % (library_id)):
+            if elem['type'] == 'file' and elem['name'] == file_name:
+                dataset_id = elem['id']
+        return dataset_id
+
+    def library_paste_file(self, library_folder_id, name, datapath, meta=None):
+        data = {}
+        data['folder_id'] = library_folder_id
+        data['file_type'] = 'auto'
+        data['name'] = name
+        data['dbkey'] = ''
+        data['upload_option'] = 'upload_paths'
+        data['create_type'] = 'file'
+        data['link_data_only'] = 'link_to_files'
+        data['filesystem_paths'] = datapath
+        if meta is not None:
+            data['extended_metadata'] = meta
+        libset = self.remote_galaxy.post("/api/libraries/%s/contents" % self.library_id, data)
+        return libset
+
+def main(api_key, api_url, data_dir, data_library ):
+    remote_galaxy = RemoteGalaxy(api_url, api_key)
+    lsync = LibrarySync(remote_galaxy, data_library )
+    library_id = lsync.get_library_id(data_library)
+    library_folder_id = lsync.get_library_folder_id(library_id, "/")
+    for file_path in glob( os.path.join(os.path.abspath(data_dir), "*") ):
+        if os.path.isfile(file_path):
+            dataset_name = os.path.basename(file_path)
+            ldda_id = lsync.get_library_dataset_id(library_id, "/", dataset_name)
+            if ldda_id is None:
+                new_ent = lsync.library_paste_file(library_folder_id, dataset_name, file_path)
+                print new_ent
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--apikey", default=None)
+    parser.add_argument("--email", default="dev@galaxyproject.org")
+    parser.add_argument("--cycle", action="store_true", default=False)
+    parser.add_argument("api_url")
+    parser.add_argument("data_dir")
+    parser.add_argument("data_library")
+
+    args = parser.parse_args()
+
+    if args.apikey is None:
+        if os.path.exists( GALAXY_USER_API_KEY ):
+            with open( GALAXY_USER_API_KEY ) as handle:
+                args.apikey = handle.read().rstrip()
+        elif os.path.exists( GALAXY_MASTER_API_KEY_FILE ):
+                    with open( GALAXY_MASTER_API_KEY_FILE ) as handle:
+                        master_apikey = handle.read().rstrip()
+                    m_rg = RemoteGalaxy(args.api_url, master_apikey)
+                    uid = m_rg.get_user_id(args.email)
+                    args.apikey = m_rg.new_api_key(uid)
+                    with open(GALAXY_USER_API_KEY, "w") as handle:
+                        handle.write(args.apikey)
+        else:
+            print "Need Galaxy API key: --apikey"
+    while True:
+        main(args.apikey, args.api_url, args.data_dir, args.data_library )
+        if not args.cycle:
+            break
+        time.sleep(60)

@@ -144,7 +144,7 @@
   template: src=restart_galaxy.j2 dest=/usr/local/bin/restart_galaxy mode=a+x
 
 - name: Create /etc/galaxy
-  file: path=/etc/galaxy state=directory owner=root group=admin mode="u=rx,g=rx,o="
+  file: path=/etc/galaxy state=directory owner=root group=admin mode="u=rx,g=rx,o=rx"
 
 - name: Add Galaxy API Key File
   template: src=api.key.j2 dest=/etc/galaxy/api.key owner=root group=admin mode="u=r,g=r,o="

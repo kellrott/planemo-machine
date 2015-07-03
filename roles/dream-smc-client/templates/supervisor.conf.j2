@@ -1,0 +1,6 @@
+[program:galaxy_lib_sync]
+command         = /usr/bin/python /opt/galaxy/galaxy_lib_sync.py http://localhost {{ galaxy_data_dir }} "{{ galaxy_import_library_name }}" --cycle
+autostart       = true
+autorestart     = true
+user            = {{ galaxy_user_name }}
+redirect_stderr = true
