@@ -148,7 +148,13 @@ if __name__ == '__main__':
         else:
             print "Need Galaxy API key: --apikey"
     while True:
-        main(args.apikey, args.api_url, args.data_dir, args.data_library )
+        try:
+            main(args.apikey, args.api_url, args.data_dir, args.data_library )
+        except Exception, e:
+            if not args.cycle:
+                raise e
+            else:
+                print "Error", e
         if not args.cycle:
             break
         time.sleep(60)
