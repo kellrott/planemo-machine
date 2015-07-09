@@ -147,4 +147,4 @@
   file: path=/etc/galaxy state=directory owner=root group=admin mode="u=rx,g=rx,o=rx"
 
 - name: Add Galaxy API Key File
-  template: src=api.key.j2 dest=/etc/galaxy/api.key owner=root group=admin mode="u=r,g=r,o="
+  template: src=api.key.j2 dest=/etc/galaxy/api.key owner=root group=admin mode="u=r,g=r,o=r"

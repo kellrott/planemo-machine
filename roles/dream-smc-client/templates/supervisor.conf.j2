@@ -1,5 +1,5 @@
 [program:galaxy_lib_sync]
-command         = /bin/bash -c 'export HOME=/home/{{ galaxy_user_name }}; /usr/bin/python /opt/galaxy/galaxy_lib_sync.py http://localhost {{ galaxy_data_dir }} "{{ galaxy_import_library_name }}" --cycle'
+command         = /bin/bash -c 'export HOME=/home/{{ galaxy_user_name }}; /usr/bin/python /opt/galaxy/galaxy_lib_sync.py http://localhost {{ galaxy_data_dir }} "{{ galaxy_import_library_name }}" --cycle --sleep 30'
 autostart       = true
 autorestart     = true
 user            = {{ galaxy_user_name }}

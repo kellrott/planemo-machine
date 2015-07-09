@@ -127,11 +127,15 @@ if __name__ == '__main__':
     parser.add_argument("--apikey", default=None)
     parser.add_argument("--email", default="dev@galaxyproject.org")
     parser.add_argument("--cycle", action="store_true", default=False)
+    parser.add_argument("--sleep", type=int, default=None)
     parser.add_argument("api_url")
     parser.add_argument("data_dir")
     parser.add_argument("data_library")
 
     args = parser.parse_args()
+    
+    if args.sleep is not None:
+        time.sleep(args.sleep)
 
     if args.apikey is None:
         if os.path.exists( GALAXY_USER_API_KEY ):

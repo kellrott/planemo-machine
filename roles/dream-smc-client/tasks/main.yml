@@ -21,4 +21,16 @@
 - 
     name: Add Auto Import supervisor configuration.
     template: src=supervisor.conf.j2 dest=/etc/supervisor/conf.d/galaxy_lib_sync.conf
-
+-
+    name: Make Data directory
+    file: path=/opt/galaxy/data state=directory owner=ubuntu group=ubuntu mode="u=rxw,g=rxw,o=rx"
+- 
+    name: Download Example Data
+    get_url: url={{ item.url }} dest=/opt/galaxy/data/{{ item.file }}
+    with_items:
+        - 
+            url: https://raw.githubusercontent.com/Sage-Bionetworks/SMC-Het-Challenge-Examples/master/data/flat_subclones.txt
+            file: flat_subclones.txt
+        - 
+            url: https://raw.githubusercontent.com/Sage-Bionetworks/SMC-Het-Challenge-Examples/master/data/mutect_filtered_IS3_chr21.vcf
+            file: mutect_filtered_IS3_chr21.vcf
