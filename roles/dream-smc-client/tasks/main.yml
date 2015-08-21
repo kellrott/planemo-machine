@@ -26,11 +26,14 @@
     file: path=/opt/galaxy/data state=directory owner=ubuntu group=ubuntu mode="u=rxw,g=rxw,o=rx"
 - 
     name: Download Example Data
-    get_url: url={{ item.url }} dest=/opt/galaxy/data/{{ item.file }}
-    with_items:
-        - 
-            url: https://raw.githubusercontent.com/Sage-Bionetworks/SMC-Het-Challenge-Examples/master/data/flat_subclones.txt
-            file: flat_subclones.txt
-        - 
-            url: https://raw.githubusercontent.com/Sage-Bionetworks/SMC-Het-Challenge-Examples/master/data/mutect_filtered_IS3_chr21.vcf
-            file: mutect_filtered_IS3_chr21.vcf
+    get_url: url={{ item.url }} dest=/opt/galaxy/data/
+    with_items: "{{smc_training_data}}"
+-  
+    name: Unpack Training Data
+    unarchive: src=/opt/galaxy/data/{{item.name}} dest=/opt/galaxy/data/ copy=no owner=ubuntu group=ubuntu
+    with_items: "{{smc_training_data}}"
+
+#-
+#    name: Change Data Owner
+#    file: path=/opt/galaxy/data/{{item.name}} state=directory mode="u+rw,g-wx,o-rwx" owner=ubuntu group=ubuntu recurse=yes
+#    with_items: "{{smc_training_data}}"

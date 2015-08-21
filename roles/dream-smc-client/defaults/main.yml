@@ -1,2 +1,8 @@
 galaxy_data_dir: /opt/galaxy/data
 galaxy_import_library_name: Imported Data
+
+
+smc_training_data:
+  - 
+    url: https://storage.googleapis.com/galaxyproject_images/Tumour1.tar.gz
+    name: Tumour1.tar.gz
