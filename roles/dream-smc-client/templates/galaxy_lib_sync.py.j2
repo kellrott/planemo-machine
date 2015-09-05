@@ -32,13 +32,13 @@ class RemoteGalaxy(object):
         params['key'] = self.api_key
         req = requests.get(c_url, params=params)
         return req.json()
-    
+
     def get_user_id(self, email):
         for user in self.get("/api/users"):
             if user['email'] == email:
                 return user['id']
         return None
-    
+
     def new_api_key(self, uid):
         api_key = self.post("/api/users/%s/api_key" % (uid), {})
         return api_key
@@ -72,7 +72,7 @@ class LibrarySync:
             library_id = library['id']
         self.library_id = library_id
         self.path_map = {}
-    
+
     def get_library_id(self, name):
         for lib in self.remote_galaxy.get("/api/libraries"):
             if not lib['deleted'] and lib['name'] == name:
@@ -93,7 +93,7 @@ class LibrarySync:
             if elem['type'] == 'file' and elem['name'] == file_name:
                 dataset_id = elem['id']
         return dataset_id
-    
+
     def get_library_folder_id(self, library_id, folder):
         dataset_id = None
         file_name = os.path.abspath(folder)
@@ -101,7 +101,7 @@ class LibrarySync:
             if elem['type'] == 'folder' and elem['name'] == file_name:
                 dataset_id = elem['id']
         return dataset_id
-    
+
     def library_make_folder(self, parent_folder_id, name, description=""):
         data = {}
         data[ 'folder_id' ] = parent_folder_id
@@ -165,7 +165,7 @@ if __name__ == '__main__':
     parser.add_argument("data_library")
 
     args = parser.parse_args()
-    
+
     if args.sleep is not None:
         time.sleep(args.sleep)
 

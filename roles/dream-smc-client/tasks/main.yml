@@ -8,7 +8,7 @@
 -
     name: Add SMC Evaluation Tool to Toolbox
     template: src=dev_tool_conf.xml.j2 dest={{ dev_tool_conf }}
-- 
+-
     name: Replace small tool conf with empty conf
     template: src=tool_conf.small.xml.j2 dest={{ small_tool_conf_path }}
     when: small_tool_conf
@@ -18,22 +18,19 @@
 -
     name: Add galaxy_lib_sync
     template: src=galaxy_lib_sync.py.j2 dest=/opt/galaxy/galaxy_lib_sync.py owner=ubuntu group=ubuntu mode="u=rx,g=rx,o="
-- 
+-
     name: Add Auto Import supervisor configuration.
     template: src=supervisor.conf.j2 dest=/etc/supervisor/conf.d/galaxy_lib_sync.conf
 -
     name: Make Data directory
     file: path=/opt/galaxy/data state=directory owner=ubuntu group=ubuntu mode="u=rxw,g=rxw,o=rx"
-- 
+-
     name: Download Example Data
-    get_url: url={{ item.url }} dest=/opt/galaxy/data/
-    with_items: "{{smc_training_data}}"
--  
+    get_url: url={{ item }} dest=/opt/galaxy/data/
+    with_items:
+        - https://storage.googleapis.com/galaxyproject_images/Tumour1.tar.gz
+-
     name: Unpack Training Data
-    unarchive: src=/opt/galaxy/data/{{item.name}} dest=/opt/galaxy/data/ copy=no owner=ubuntu group=ubuntu
-    with_items: "{{smc_training_data}}"
-
-#-
-#    name: Change Data Owner
-#    file: path=/opt/galaxy/data/{{item.name}} state=directory mode="u+rw,g-wx,o-rwx" owner=ubuntu group=ubuntu recurse=yes
-#    with_items: "{{smc_training_data}}"
+    unarchive: src=/opt/galaxy/data/{{item}} dest=/opt/galaxy/data/ copy=no
+    with_items:
+        - Tumour1.tar.gz
