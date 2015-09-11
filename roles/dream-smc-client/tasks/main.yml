@@ -25,12 +25,20 @@
     name: Make Data directory
     file: path=/opt/galaxy/data state=directory owner=ubuntu group=ubuntu mode="u=rxw,g=rxw,o=rx"
 -
+    name: Make Download directory
+    file: path=/opt/galaxy/download state=directory owner=ubuntu group=ubuntu mode="u=rxw,g=rxw,o=rx"
+-
     name: Download Example Data
-    get_url: url={{ item }} dest=/opt/galaxy/data/
+    get_url: url={{ item }} dest=/opt/galaxy/download/
     with_items:
         - https://storage.googleapis.com/galaxyproject_images/Tumour1.tar.gz
+        - https://storage.googleapis.com/galaxyproject_images/Tumour2.tar.gz
 -
     name: Unpack Training Data
-    unarchive: src=/opt/galaxy/data/{{item}} dest=/opt/galaxy/data/ copy=no
+    unarchive: src=/opt/galaxy/download/{{item}} dest=/opt/galaxy/data/ copy=no owner=ubuntu group=ubuntu
     with_items:
         - Tumour1.tar.gz
+        - Tumour2.tar.gz
+-
+    name: chown data directory to ubuntu
+    shell: chown -R ubuntu:ubuntu /opt/galaxy/data
