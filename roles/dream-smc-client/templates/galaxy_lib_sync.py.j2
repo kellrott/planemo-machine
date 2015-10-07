@@ -134,6 +134,8 @@ def sync_dir(lsync, api_key, api_url, data_dir, library_id, library_folder):
     for file_path in glob( os.path.join(os.path.abspath(data_dir), "*") ):
         if os.path.isfile(file_path):
             dataset_name = os.path.basename(file_path)
+            if dataset_name.endswith(".gz"):
+                dataset_name = dataset_name[:-3]
             ldda_id = lsync.get_library_dataset_id(library_id, library_folder, dataset_name)
             if ldda_id is None:
                 new_ent = lsync.library_paste_file(library_folder_id, dataset_name, file_path)

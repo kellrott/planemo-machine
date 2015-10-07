@@ -12,6 +12,9 @@
     name: Replace small tool conf with empty conf
     template: src=tool_conf.small.xml.j2 dest={{ small_tool_conf_path }}
     when: small_tool_conf
+- 
+    name: Add Galaxy user to docker group - allowing sudoless docker usage
+    user: name=ubuntu groups=docker append=yes
 -
     name: Copy dream_galaxy_submit
     command: cp /opt/galaxy/SMC-Het-Challenge/dream_galaxy_submit /usr/bin/
@@ -42,3 +45,6 @@
 -
     name: chown data directory to ubuntu
     shell: chown -R ubuntu:ubuntu /opt/galaxy/data
+-
+    name: Evaluation tool data config
+    template: src=smc_samples.loc.j2 dest=/opt/galaxy/galaxy-app/tool-data/smc_samples.loc owner=ubuntu group=ubuntu mode="u=r,g=r,o=r"
