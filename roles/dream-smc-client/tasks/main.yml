@@ -3,6 +3,9 @@
     name: Synapse Client
     pip: name=synapseclient
 -
+    name: Tornado
+    pip: name=tornado
+-
     name: Download SMC Evaluation Tool
     git: dest=/opt/galaxy/SMC-Het-Challenge repo=https://github.com/Sage-Bionetworks/SMC-Het-Challenge.git
 -
@@ -23,7 +26,16 @@
     template: src=galaxy_lib_sync.py.j2 dest=/opt/galaxy/galaxy_lib_sync.py owner=ubuntu group=ubuntu mode="u=rx,g=rx,o="
 -
     name: Add Auto Import supervisor configuration.
-    template: src=supervisor.conf.j2 dest=/etc/supervisor/conf.d/galaxy_lib_sync.conf
+    template: src=galaxy_lib_sync_supervisor.conf.j2 dest=/etc/supervisor/conf.d/galaxy_lib_sync.conf
+-
+    name: Add galaxy lib sync supervisor configuration.
+    template: src=galaxy_lib_sync_supervisor.conf.j2 dest=/etc/supervisor/conf.d/galaxy_lib_sync.conf
+-
+    name: Add submission server supervisor configuration.
+    template: src=dream_submit_supervisor.conf.j2 dest=/etc/supervisor/conf.d/dream_submit_server.conf
+-
+    name: Add config for Submission Server
+    template: src=nginx_submit.conf.j2 dest={{ nginx_conf_directory }}/submit.conf
 -
     name: Make Data directory
     file: path=/opt/galaxy/data state=directory owner=ubuntu group=ubuntu mode="u=rxw,g=rxw,o=rx"

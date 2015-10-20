@@ -1,6 +1,8 @@
 galaxy_data_dir: /opt/galaxy/data
 galaxy_import_library_name: Imported Data
 
+nginx_conf_directory: /etc/nginx/conf.d
+dream_submit_port : 9931
 
 smc_training_data:
   - 
