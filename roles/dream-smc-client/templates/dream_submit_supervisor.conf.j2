@@ -1,5 +1,5 @@
 [program:dream_submit_server]
-command         = /opt/galaxy/SMC-Het-Challenge/dream_galaxy_server.py --port {{ dream_submit_port }} --apikey {{ galaxy_master_api_key }}
+command         = /opt/galaxy/SMC-Het-Challenge/dream_galaxy_server.py --port {{ dream_submit_port }} --keyfile /home/{{ galaxy_user_name }}/.galaxy_key
 autostart       = true
 autorestart     = true
 user            = {{ galaxy_user_name }}
