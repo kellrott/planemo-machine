@@ -22,6 +22,9 @@
     name: Copy dream_galaxy_submit
     command: cp /opt/galaxy/SMC-Het-Challenge/dream_galaxy_submit /usr/bin/
 -
+    name: Add tool directory mounting command
+    template: src=gce_mount_tool_disk.j2 dest=/usr/local/bin/gce_mount_tool_disk mode=a+x
+-
     name: Add galaxy_lib_sync
     template: src=galaxy_lib_sync.py.j2 dest=/opt/galaxy/galaxy_lib_sync.py owner=ubuntu group=ubuntu mode="u=rx,g=rx,o="
 -

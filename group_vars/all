@@ -18,8 +18,8 @@ dev_user_shellrc: "{{ dev_user_home }}/.bashrc"
 
 galaxy_vcs: git
 galaxy_git_repo: https://github.com/galaxyproject/galaxy.git
-galaxy_changeset_id: release_15.07
-galaxy_download_url: https://codeload.github.com/galaxyproject/galaxy/tar.gz/release_15.07
+galaxy_changeset_id: release_15.10
+galaxy_download_url: https://codeload.github.com/galaxyproject/galaxy/tar.gz/release_15.10
 
 galaxy_manage_clone: no
 galaxy_manage_download: yes
@@ -68,6 +68,11 @@ galaxy_docker_enabled: true
 galaxy_docker_volumes_from: ""
 galaxy_docker_volumes: "$defaults,/opt/galaxy/data:ro"
 galaxy_master_api_key: HSNiugRFvgT574F43jZ7N9F3
+
+nginx_use_passwords: True
+nginx_htpasswds:
+  - "admin:WiBKbsJTSQ8dc"
+  - "planemo:8Xvgj/h3f4hB6"
 
 nginx_proxy_ide: true
 nginx_proxy_reports: false
